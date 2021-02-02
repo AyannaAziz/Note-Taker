@@ -24,7 +24,7 @@ app.get("/notes", function(req, res) {
   res.sendFile(path.join(__dirname, "/public/notes.html"));
 });
 
-//post route reads the data and converts into an arrayand pushes the new data into the same array, then writes into file
+//post route reads the data and converts into an array and pushes the new data into the same array, then writes into file
 app.post("/api/notes", function(req, res) {
 
   fs.readFile(path.join(__dirname, "/db/db.json"), 'utf8', (error, data) => {
@@ -32,9 +32,10 @@ app.post("/api/notes", function(req, res) {
       console.error(error)
     }
     else {
-      // var dataArray = req.body
+      var dataArray = req.body
+      dataArray.id = Date.now(dataArray)
       var fileData = JSON.parse(data)
-      fileData.push(req.body)
+      fileData.push(dataArray)
       fs.writeFile(path.join(__dirname, "/db/db.json"), JSON.stringify(fileData), (error, data) => {
         if (error){
           console.error(error)
