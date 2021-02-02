@@ -2,7 +2,8 @@
 // =============================================================
 var express = require("express");
 var path = require("path");
-
+const fs = require('fs');
+// const db = require("/db/db")
 // Sets up the Express App
 // =============================================================
 var app = express();
@@ -17,15 +18,31 @@ app.use(express.static(path.join(__dirname, 'public')))
 // Routes
 // =============================================================
 
-// Basic route that sends the user first to the AJAX Page
-app.get("/", function(req, res) {
-  res.sendFile(path.join(__dirname, "index.html"));
-});
+
 
 app.get("/notes", function(req, res) {
   res.sendFile(path.join(__dirname, "/public/notes.html"));
 });
 
+
+app.get("/api/notes", function(req, res) {
+  fs.readFile(path.join(__dirname, "/db/db.json"), 'utf8', (error, data) => {
+    if (error){
+      console.error(error)
+    }
+    else {
+      return res.json(JSON.parse(data))
+    }
+  }
+  
+);
+
+});
+
+// Basic route that sends the user first to the AJAX Page
+app.get("*", function(req, res) {
+  res.sendFile(path.join(__dirname, "/public/index.html"));
+});
 
 // Starts the server to begin listening
 // =============================================================
