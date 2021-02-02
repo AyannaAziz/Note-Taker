@@ -19,11 +19,38 @@ app.use(express.static(path.join(__dirname, 'public')))
 // =============================================================
 
 
-
+//get route 
 app.get("/notes", function(req, res) {
   res.sendFile(path.join(__dirname, "/public/notes.html"));
 });
 
+//post route reads the data and converts into an arrayand pushes the new data into the same array, then writes into file
+app.post("/api/notes", function(req, res) {
+
+  fs.readFile(path.join(__dirname, "/db/db.json"), 'utf8', (error, data) => {
+    if (error){
+      console.error(error)
+    }
+    else {
+      // var dataArray = req.body
+      var fileData = JSON.parse(data)
+      fileData.push(req.body)
+      fs.writeFile(path.join(__dirname, "/db/db.json"), JSON.stringify(fileData), (error, data) => {
+        if (error){
+          console.error(error)
+        }
+        else {
+          return res.json(data)
+        }
+    
+      });
+    
+    }
+  }
+  
+);
+
+});
 
 app.get("/api/notes", function(req, res) {
   fs.readFile(path.join(__dirname, "/db/db.json"), 'utf8', (error, data) => {
