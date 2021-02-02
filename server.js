@@ -53,6 +53,41 @@ app.post("/api/notes", function(req, res) {
 
 });
 
+//delete route read file then get ID to delete
+app.delete("/api/notes/:id", function(req, res) {
+
+  fs.readFile(path.join(__dirname, "/db/db.json"), 'utf8', (error, data) => {
+    if (error){
+      console.error(error)
+    }
+    else {
+      const id = parseInt(req.params.id)
+      var fileData = JSON.parse(data)
+      
+      for (var i=0; i < fileData.length; i++){
+        if (fileData[i].id === id) {
+          
+          fileData.splice(i, 1)
+          fs.writeFile(path.join(__dirname, "/db/db.json"), JSON.stringify(fileData), (error, data) => {
+            if (error){
+              console.error(error)
+            }
+            else {
+              return res.send("deleted successfully")
+            }
+        
+          });
+        }
+      }
+      
+    
+    }
+  }
+  
+);
+
+});
+
 app.get("/api/notes", function(req, res) {
   fs.readFile(path.join(__dirname, "/db/db.json"), 'utf8', (error, data) => {
     if (error){
