@@ -2,7 +2,7 @@
 // =============================================================
 var express = require("express");
 var path = require("path");
-const fs = require('fs');
+const fs = require("fs");
 // const db = require("/db/db")
 // Sets up the Express App
 // =============================================================
@@ -13,102 +13,94 @@ var PORT = process.env.PORT || 3000;
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-app.use(express.static(path.join(__dirname, 'public')))
+app.use(express.static(path.join(__dirname, "public")));
 
 // Routes
 // =============================================================
 
-
-//get route 
-app.get("/notes", function(req, res) {
+//get route
+app.get("/notes", function (req, res) {
   res.sendFile(path.join(__dirname, "/public/notes.html"));
 });
 
 //post route reads the data and converts into an array and pushes the new data into the same array, then writes into file
-app.post("/api/notes", function(req, res) {
-
-  fs.readFile(path.join(__dirname, "/db/db.json"), 'utf8', (error, data) => {
-    if (error){
-      console.error(error)
-    }
-    else {
-      var dataArray = req.body
-      dataArray.id = Date.now(dataArray)
-      var fileData = JSON.parse(data)
-      fileData.push(dataArray)
-      fs.writeFile(path.join(__dirname, "/db/db.json"), JSON.stringify(fileData), (error, data) => {
-        if (error){
-          console.error(error)
+app.post("/api/notes", function (req, res) {
+  fs.readFile(path.join(__dirname, "/db/db.json"), "utf8", (error, data) => {
+    if (error) {
+      console.error(error);
+    } else {
+      var dataArray = req.body;
+      dataArray.id = Date.now(dataArray);
+      var fileData = JSON.parse(data);
+      fileData.push(dataArray);
+      fs.writeFile(
+        path.join(__dirname, "/db/db.json"),
+        JSON.stringify(fileData),
+        (error, data) => {
+          if (error) {
+            console.error(error);
+          } else {
+            return res.json(data);
+          }
         }
-        else {
-          return res.json(data)
-        }
-    
-      });
-    
+        );
+        fs.readFile(path.join(__dirname, "/db/db.json"), "utf8", (error, data) => {
+          if (error) {
+            console.error(error);
+          } else {
+            return res.json(JSON.parse(data));
+          }
+        });
     }
-  }
-  
-);
-
+  });
 });
 
 //delete route read file then get ID to delete
-app.delete("/api/notes/:id", function(req, res) {
+app.delete("/api/notes/:id", function (req, res) {
+  fs.readFile(path.join(__dirname, "/db/db.json"), "utf8", (error, data) => {
+    if (error) {
+      console.error(error);
+    } else {
+      const id = parseInt(req.params.id);
+      var fileData = JSON.parse(data);
 
-  fs.readFile(path.join(__dirname, "/db/db.json"), 'utf8', (error, data) => {
-    if (error){
-      console.error(error)
-    }
-    else {
-      const id = parseInt(req.params.id)
-      var fileData = JSON.parse(data)
-      
-      for (var i=0; i < fileData.length; i++){
+      for (var i = 0; i < fileData.length; i++) {
         if (fileData[i].id === id) {
-          
-          fileData.splice(i, 1)
-          fs.writeFile(path.join(__dirname, "/db/db.json"), JSON.stringify(fileData), (error, data) => {
-            if (error){
-              console.error(error)
+          fileData.splice(i, 1);
+          fs.writeFile(
+            path.join(__dirname, "/db/db.json"),
+            JSON.stringify(fileData),
+            (error, data) => {
+              if (error) {
+                console.error(error);
+              } else {
+                return res.send("deleted successfully");
+              }
             }
-            else {
-              return res.send("deleted successfully")
-            }
-        
-          });
+          );
         }
       }
-      
-    
     }
-  }
-  
-);
-
+  });
 });
 
-app.get("/api/notes", function(req, res) {
-  fs.readFile(path.join(__dirname, "/db/db.json"), 'utf8', (error, data) => {
-    if (error){
-      console.error(error)
+app.get("/api/notes", function (req, res) {
+  fs.readFile(path.join(__dirname, "/db/db.json"), "utf8", (error, data) => {
+    if (error) {
+      console.error(error);
+    } else {
+      return res.json(JSON.parse(data));
     }
-    else {
-      return res.json(JSON.parse(data))
-    }
-  }
-  
-);
-
+  });
 });
 
 // Basic route that sends the user first to the AJAX Page
-app.get("*", function(req, res) {
+app.get("*", function (req, res) {
   res.sendFile(path.join(__dirname, "/public/index.html"));
 });
 
 // Starts the server to begin listening
 // =============================================================
-app.listen(PORT, function() {
+app.listen(PORT, function () {
   console.log("App listening on PORT " + PORT);
 });
